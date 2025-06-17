@@ -1,55 +1,32 @@
-import { readFile, writeFile } from "fs/promises";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
-import { randomBytes } from "crypto";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const contactsPath = join(__dirname, "../db/contacts.json");
+import { Contact } from "../models/contacts.js";
 
 async function listContacts() {
-  const data = await readFile(contactsPath);
-  return JSON.parse(data);
+  return Contact.findAll();
 }
 
 async function getContactById(contactId) {
-  const contacts = await listContacts();
-  const contact = contacts.find(({ id }) => id === contactId);
-  return contact || null;
+  return Contact.findByPk(contactId);
 }
 
 async function removeContact(contactId) {
-  const contacts = await listContacts();
-  const index = contacts.findIndex(({ id }) => id === contactId);
-  if (index === -1) return null;
-  const [removedContact] = contacts.splice(index, 1);
-  await writeFile(contactsPath, JSON.stringify(contacts));
-  return removedContact;
+  const contact = await Contact.findByPk(contactId);
+  if (!contact) return null;
+  await contact.destroy();
+  return contact;
 }
 
-async function addContact(name, email, phone) {
-  const contacts = await listContacts();
-  const newContact = {
-    id: randomBytes(16).toString("base64url").substring(0, 21),
-    name,
-    email,
-    phone,
-  };
-  contacts.push(newContact);
-  await writeFile(contactsPath, JSON.stringify(contacts));
-  return newContact;
+async function addContact(body) {
+  return await Contact.build(body).save();
 }
 
 async function updateContact(contactId, body) {
-  const contacts = await listContacts();
-  const index = contacts.findIndex(({ id }) => id === contactId);
-  if (index === -1) return null;
-  contacts[index] = {
-    ...contacts[index],
-    ...body,
-  };
-  await writeFile(contactsPath, JSON.stringify(contacts));
-  return contacts[index];
+  const contact = await Contact.findByPk(contactId);
+  if (!contact) return null;
+  return await contact.update(body);
+}
+
+async function updateStatusContact(contactId, body) {
+  return await updateContact(contactId, body);
 }
 
 export default {
@@ -58,4 +35,5 @@ export default {
   addContact,
   removeContact,
   updateContact,
+  updateStatusContact,
 };

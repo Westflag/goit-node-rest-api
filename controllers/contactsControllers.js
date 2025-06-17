@@ -25,9 +25,7 @@ export const deleteContact = async (req, res, next) => {
 };
 
 export const createContact = async (req, res, next) => {
-  const { name, email, phone } = req.body;
-
-  const contact = await contactsServices.addContact(name, email, phone);
+  const contact = await contactsServices.addContact(req.body);
 
   if (!contact) return next(HttpError(404));
 
@@ -37,6 +35,15 @@ export const createContact = async (req, res, next) => {
 export const updateContact = async (req, res, next) => {
   const { id } = req.params;
   const contact = await contactsServices.updateContact(id, req.body);
+
+  if (!contact) return next(HttpError(404));
+
+  res.json(contact);
+};
+
+export const updateStatusContact = async (req, res, next) => {
+  const { id } = req.params;
+  const contact = await contactsServices.updateStatusContact(id, req.body);
 
   if (!contact) return next(HttpError(404));
 
