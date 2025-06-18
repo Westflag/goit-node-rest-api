@@ -4,12 +4,6 @@ import {sequelize} from "../db/db.js";
 export const Contact = sequelize.define(
     "contacts",
     {
-        id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
-            allowNull: false,
-            primaryKey: true,
-        },
         name: {
             type: DataTypes.STRING,
             allowNull: false,
