@@ -7,7 +7,7 @@ export const createUserSchema = Joi.object({
     .min(8)
     .regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/)
     .message(
-      "Password shoul contain at least 1 lowercase letter, at least 1 uppercase letter, at least 1 digit."
+      "Password should contain at least 1 lowercase letter, at least 1 uppercase letter, at least 1 digit."
     ),
 });
 

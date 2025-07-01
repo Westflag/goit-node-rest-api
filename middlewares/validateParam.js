@@ -13,7 +13,6 @@ const validateParam = (req, _, next) => {
   if (!Number.isInteger(intId) || intId <= 0) {
     return next(HttpError(404, "Invalid ID"));
   }
-
   next();
 };
 

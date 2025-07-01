@@ -1,5 +1,6 @@
 import { User } from "../models/users.js";
 import bcrypt from "bcrypt";
+import gravatar from "gravatar";
 
 const SALT_ROUNDS = 10;
 
@@ -9,6 +10,7 @@ async function createUser(email, password) {
   return await User.build({
     email,
     password: bcrypt.hashSync(password, SALT_ROUNDS),
+    avatarurl: gravatar.url(email, null, true),
   }).save();
 }
 

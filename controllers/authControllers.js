@@ -3,6 +3,9 @@ import HttpError from "../helpers/HttpError.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
+import { join, extname } from "path";
+import { promises } from "fs";
+import { v4 } from "uuid";
 
 dotenv.config();
 
@@ -59,4 +62,23 @@ export const updateUser = async (req, res) => {
   const user = await authServices.updateUser(req.user.id, req.body);
 
   res.json({ user: prepareUserResponse(user) });
+};
+
+export const updateAvatar = async (req, res, next) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+  const { path: temporaryName, originalname } = req.file;
+  const fileName = `${v4()}${extname(originalname)}`;
+  const filePath = join(process.cwd(), "public", "avatars", fileName);
+
+  try {
+    await promises.rename(temporaryName, filePath);
+    const avatarURL = `/avatars/${fileName}`;
+    await authServices.updateUser(req.user.id, { avatarurl: avatarURL });
+    res.json({ avatarURL });
+  } catch (err) {
+    await promises.unlink(temporaryName);
+    return next(err);
+  }
 };

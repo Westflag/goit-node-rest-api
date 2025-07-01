@@ -1,5 +1,5 @@
-import {DataTypes} from "sequelize";
-import {sequelize} from "../db/db.js";
+import { DataTypes } from "sequelize";
+import { sequelize } from "../db/db.js";
 
 export const Contact = sequelize.define(
     "contacts",
