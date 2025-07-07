@@ -1,6 +1,7 @@
 import { User } from "../models/users.js";
 import bcrypt from "bcrypt";
 import gravatar from "gravatar";
+import { v4 } from "uuid";
 
 const SALT_ROUNDS = 10;
 
@@ -11,7 +12,14 @@ async function createUser(email, password) {
     email,
     password: bcrypt.hashSync(password, SALT_ROUNDS),
     avatarurl: gravatar.url(email, null, true),
+    verificationtoken: v4(),
   }).save();
+}
+
+async function getUserByVerificationToken(verificationToken) {
+  return await User.findOne({
+    where: { verificationtoken: verificationToken },
+  });
 }
 
 async function getUserByEmail(email) {
@@ -33,4 +41,5 @@ export default {
   getUserByEmail,
   updateUser,
   getUserById,
+  getUserByVerificationToken,
 };
